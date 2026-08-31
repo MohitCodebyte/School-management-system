@@ -1,0 +1,129 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Exam Report{% endblock %}
+
+{% block sidebar_brand %}{% if session.user_role == 'admin' %}SMS Admin{% elif session.user_role == 'teacher' %}SMS Teacher{% elif session.user_role == 'student' %}SMS Student{% else %}SMS{% endif %}{% endblock %}
+
+{% block sidebar_nav %}
+{% if session.user_role == 'admin' %}
+{% include "layouts/sidebar_admin.html" %}
+{% elif session.user_role == 'teacher' %}
+{% include "layouts/sidebar_teacher.html" %}
+{% elif session.user_role == 'student' %}
+{% include "layouts/sidebar_student.html" %}
+{% endif %}
+{% endblock %}
+
+{% block page_title %}Exam Report{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else session.user_role[0]|upper }}{% endblock %}
+{% block user_name %}{{ session.user_name or session.user_role|capitalize }}{% endblock %}
+{% block user_role %}{{ session.user_role|capitalize }}{% endblock %}
+
+{% block dashboard_content %}
+<!-- Filter Form -->
+<div class="card mb-4">
+    <form action="{{ url_for('reports.exam_report') }}" method="GET" class="d-flex gap-3">
+        <div style="flex: 1;">
+            <input type="text" class="form-control" name="exam_name" placeholder="Exam name" value="{{ exam_name }}">
+        </div>
+        <div style="flex: 1;">
+            <input type="text" class="form-control" name="subject" placeholder="Subject" value="{{ subject }}">
+        </div>
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="class">
+                <option value="">All Classes</option>
+                <option value="10" {% if class_filter == '10' %}selected{% endif %}>Class 10</option>
+                <option value="9" {% if class_filter == '9' %}selected{% endif %}>Class 9</option>
+                <option value="8" {% if class_filter == '8' %}selected{% endif %}>Class 8</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-filter"></i> Filter
+        </button>
+        <a href="{{ url_for('reports.exam_report') }}" class="btn btn-secondary">
+            <i class="bi bi-x"></i> Clear
+        </a>
+        <a href="{{ url_for('reports.reports_home') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="dashboard-cards mb-4">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="bi bi-clipboard-data"></i>
+        </div>
+        <div class="stat-label">Total Exams</div>
+        <div class="stat-value">{{ total_exams }}</div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-icon success">
+            <i class="bi bi-graph-up"></i>
+        </div>
+        <div class="stat-label">Average Marks</div>
+        <div class="stat-value">{{ avg_marks }}%</div>
+    </div>
+</div>
+
+<!-- Exams Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Exam Records</h3>
+        <span class="badge badge-primary">{{ exams|length }} Records</span>
+    </div>
+    <div class="card-body">
+        {% if exams %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Exam Name</th>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Marks Obtained</th>
+                        <th>Total Marks</th>
+                        <th>Grade</th>
+                        <th>Exam Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in exams %}
+                    <tr>
+                        <td>{{ exam.exam_name }}</td>
+                        <td>{{ exam.student.name if exam.student else '-' }}</td>
+                        <td>{{ exam.subject }}</td>
+                        <td>{{ exam.marks_obtained or '-' }}</td>
+                        <td>{{ exam.total_marks }}</td>
+                        <td>
+                            {% if exam.grade %}
+                            <span class="badge badge-primary">{{ exam.grade }}</span>
+                            {% else %}
+                            <span class="badge badge-secondary">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ exam.exam_date.strftime('%Y-%m-%d') if exam.exam_date else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-clipboard-data" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No exam records found</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

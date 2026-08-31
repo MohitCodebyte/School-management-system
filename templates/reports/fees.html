@@ -1,0 +1,142 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Fee Report{% endblock %}
+
+{% block sidebar_brand %}{% if session.user_role == 'admin' %}SMS Admin{% elif session.user_role == 'teacher' %}SMS Teacher{% elif session.user_role == 'student' %}SMS Student{% else %}SMS{% endif %}{% endblock %}
+
+{% block sidebar_nav %}
+{% if session.user_role == 'admin' %}
+{% include "layouts/sidebar_admin.html" %}
+{% elif session.user_role == 'teacher' %}
+{% include "layouts/sidebar_teacher.html" %}
+{% elif session.user_role == 'student' %}
+{% include "layouts/sidebar_student.html" %}
+{% endif %}
+{% endblock %}
+
+{% block page_title %}Fee Report{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else session.user_role[0]|upper }}{% endblock %}
+{% block user_name %}{{ session.user_name or session.user_role|capitalize }}{% endblock %}
+{% block user_role %}{{ session.user_role|capitalize }}{% endblock %}
+
+{% block dashboard_content %}
+<!-- Filter Form -->
+<div class="card mb-4">
+    <form action="{{ url_for('reports.fee_report') }}" method="GET" class="d-flex gap-3">
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="status">
+                <option value="">All Status</option>
+                <option value="Paid" {% if status_filter == 'Paid' %}selected{% endif %}>Paid</option>
+                <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Partial" {% if status_filter == 'Partial' %}selected{% endif %}>Partial</option>
+            </select>
+        </div>
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="academic_year">
+                <option value="">All Years</option>
+                <option value="2024-25" {% if academic_year == '2024-25' %}selected{% endif %}>2024-25</option>
+                <option value="2023-24" {% if academic_year == '2023-24' %}selected{% endif %}>2023-24</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-filter"></i> Filter
+        </button>
+        <a href="{{ url_for('reports.fee_report') }}" class="btn btn-secondary">
+            <i class="bi bi-x"></i> Clear
+        </a>
+        <a href="{{ url_for('reports.export_report', report_type='fees') }}" class="btn btn-success">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
+        <a href="{{ url_for('reports.reports_home') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="dashboard-cards mb-4">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="bi bi-cash"></i>
+        </div>
+        <div class="stat-label">Total Fees</div>
+        <div class="stat-value">₹{{ "{:,.2f}".format(total_fees) }}</div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-icon success">
+            <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="stat-label">Total Collected</div>
+        <div class="stat-value">₹{{ "{:,.2f}".format(total_paid) }}</div>
+    </div>
+    <div class="stat-card danger">
+        <div class="stat-icon danger">
+            <i class="bi bi-exclamation-circle"></i>
+        </div>
+        <div class="stat-label">Total Due</div>
+        <div class="stat-value">₹{{ "{:,.2f}".format(total_due) }}</div>
+    </div>
+</div>
+
+<!-- Fees Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Fee Records</h3>
+        <span class="badge badge-primary">{{ fees|length }} Records</span>
+    </div>
+    <div class="card-body">
+        {% if fees %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Fee Type</th>
+                        <th>Total Fee</th>
+                        <th>Paid Fee</th>
+                        <th>Due Fee</th>
+                        <th>Status</th>
+                        <th>Academic Year</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in fees %}
+                    <tr>
+                        <td>{{ fee.student.name if fee.student else '-' }}</td>
+                        <td>{{ fee.fee_type }}</td>
+                        <td>₹{{ "{:,.2f}".format(fee.total_fee) }}</td>
+                        <td>₹{{ "{:,.2f}".format(fee.paid_fee) }}</td>
+                        <td>₹{{ "{:,.2f}".format(fee.due_fee) }}</td>
+                        <td>
+                            {% if fee.status == 'Paid' %}
+                            <span class="badge badge-success">Paid</span>
+                            {% elif fee.status == 'Pending' %}
+                            <span class="badge badge-danger">Pending</span>
+                            {% else %}
+                            <span class="badge badge-warning">Partial</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ fee.academic_year or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-cash" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No fee records found</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

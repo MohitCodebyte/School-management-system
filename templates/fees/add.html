@@ -1,0 +1,90 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Add Fee{% endblock %}
+
+{% block sidebar_brand %}SMS Admin{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_admin.html" %}
+{% endblock %}
+
+{% block nav_fees_class %}active{% endblock %}
+
+{% block page_title %}Add Fee{% endblock %}
+
+{% block user_avatar %}A{% endblock %}
+{% block user_name %}Admin{% endblock %}
+{% block user_role %}Administrator{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Add New Fee Record</h3>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('fees.fee_add') }}" method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="student_id" class="form-label">Student</label>
+                    <select class="form-control form-select" id="student_id" name="student_id" required>
+                        <option value="">Select Student</option>
+                        {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.name }} ({{ student.admission_number }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="fee_type" class="form-label">Fee Type</label>
+                    <input type="text" class="form-control" id="fee_type" name="fee_type" required placeholder="e.g., Tuition Fee, Library Fee">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="total_fee" class="form-label">Total Fee (₹)</label>
+                    <input type="number" class="form-control" id="total_fee" name="total_fee" required min="0" step="0.01">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="paid_fee" class="form-label">Paid Fee (₹)</label>
+                    <input type="number" class="form-control" id="paid_fee" name="paid_fee" min="0" step="0.01" value="0">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="academic_year" class="form-label">Academic Year</label>
+                    <input type="text" class="form-control" id="academic_year" name="academic_year" placeholder="e.g., 2024-2025">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="payment_date" class="form-label">Payment Date</label>
+                    <input type="date" class="form-control" id="payment_date" name="payment_date">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="payment_method" class="form-label">Payment Method</label>
+                    <select class="form-control form-select" id="payment_method" name="payment_method">
+                        <option value="">Select Method</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Check">Check</option>
+                        <option value="Online">Online</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save Fee Record
+                </button>
+                <a href="{{ url_for('fees.fee_list') }}" class="btn btn-secondary">
+                    <i class="bi bi-x"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

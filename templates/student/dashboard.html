@@ -1,0 +1,174 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Student Dashboard{% endblock %}
+
+{% block sidebar_brand %}SMS Student{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_student.html" %}
+{% endblock %}
+
+{% block nav_dashboard_class %}active{% endblock %}
+
+{% block page_title %}Student Dashboard{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else 'S' }}{% endblock %}
+{% block user_name %}{{ session.user_name or 'Student' }}{% endblock %}
+{% block user_role %}Student{% endblock %}
+
+{% block dashboard_content %}
+{% if student %}
+<!-- Dashboard Cards -->
+<div class="dashboard-cards">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="bi bi-calendar-check"></i>
+        </div>
+        <div class="stat-label">My Attendance</div>
+        <div class="stat-value counter-value" data-target="{{ attendance_percentage if attendance_percentage else 0 }}">{{ attendance_percentage if attendance_percentage else 0 }}%</div>
+        <div class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> This semester
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="stat-icon success">
+            <i class="bi bi-clipboard-data"></i>
+        </div>
+        <div class="stat-label">Exam Results</div>
+        <div class="stat-value counter-value" data-target="{{ student_exams|length }}">{{ student_exams|length }}</div>
+        <div class="stat-change positive">
+            <i class="bi bi-trophy"></i> Completed
+        </div>
+    </div>
+    
+    <div class="stat-card warning">
+        <div class="stat-icon warning">
+            <i class="bi bi-cash"></i>
+        </div>
+        <div class="stat-label">Fee Status</div>
+        <div class="stat-value">{{ 'Paid' if total_due == 0 else 'Due' }}</div>
+        <div class="stat-change">
+            <i class="bi bi-receipt"></i> {{ total_due }} due
+        </div>
+    </div>
+    
+    <div class="stat-card accent">
+        <div class="stat-icon accent">
+            <i class="bi bi-bell"></i>
+        </div>
+        <div class="stat-label">Notifications</div>
+        <div class="stat-value counter-value" data-target="{{ notifications|length }}">{{ notifications|length }}</div>
+        <div class="stat-change">
+            <i class="bi bi-envelope"></i> New messages
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <div class="quick-action" data-url="{{ url_for('students.student_profile', id=student.id) }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-person"></i>
+        </div>
+        <div class="quick-action-label">My Profile</div>
+    </div>
+    <div class="quick-action" data-url="{{ url_for('student.student_fees') }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-cash"></i>
+        </div>
+        <div class="quick-action-label">View Fees</div>
+    </div>
+    <div class="quick-action" data-url="{{ url_for('student.student_exams') }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-clipboard-data"></i>
+        </div>
+        <div class="quick-action-label">My Results</div>
+    </div>
+    <div class="quick-action" data-url="{{ url_for('student.student_notices') }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-megaphone"></i>
+        </div>
+        <div class="quick-action-label">Notices</div>
+    </div>
+</div>
+
+<!-- Recent Notices -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Recent Notices</h3>
+    </div>
+    <div class="card-body">
+        {% if recent_notices %}
+        <div class="activity-feed">
+            {% for notice in recent_notices %}
+            <div class="activity-item">
+                <div class="activity-icon add">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ notice.title }}</div>
+                    <div class="activity-time">{{ notice.created_at.strftime('%Y-%m-%d %H:%M') if notice.created_at else '' }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: #64748B; text-align: center; padding: 2rem;">No recent notices</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Upcoming Exams -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Upcoming Exams</h3>
+    </div>
+    <div class="card-body">
+        {% if student_exams %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Exam</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in student_exams %}
+                    <tr>
+                        <td>{{ exam.exam_name }}</td>
+                        <td>{{ exam.subject }}</td>
+                        <td>{{ exam.exam_date.strftime('%Y-%m-%d') if exam.exam_date else '' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #64748B; text-align: center; padding: 2rem;">No upcoming exams</p>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="text-center py-5">
+            <i class="bi bi-person" style="font-size: 4rem; color: #6B7280;"></i>
+            <h4 class="mt-3">Demo Mode</h4>
+            <p class="text-muted">Student record not found. Please contact administration to link your account.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Attendance Report{% endblock %}
+
+{% block sidebar_brand %}SMS Admin{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_admin.html" %}
+{% endblock %}
+
+{% block nav_attendance_class %}active{% endblock %}
+
+{% block page_title %}Attendance Report{% endblock %}
+
+{% block user_avatar %}A{% endblock %}
+{% block user_name %}Admin{% endblock %}
+{% block user_role %}Administrator{% endblock %}
+
+{% block dashboard_content %}
+<!-- Filter Form -->
+<div class="card mb-4">
+    <form action="{{ url_for('attendance.attendance_report') }}" method="GET" class="d-flex gap-3">
+        <div style="flex: 1;">
+            <input type="date" class="form-control" name="from_date" value="{{ from_date }}">
+        </div>
+        <div style="flex: 1;">
+            <input type="date" class="form-control" name="to_date" value="{{ to_date }}">
+        </div>
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="student_id">
+                <option value="">All Students</option>
+                {% for student in students %}
+                <option value="{{ student.id }}" {% if student_id == student.id|string %}selected{% endif %}>
+                    {{ student.name }} ({{ student.admission_number }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-filter"></i> Generate Report
+        </button>
+        <a href="{{ url_for('attendance.attendance_list') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Attendance
+        </a>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Days</h5>
+                <h3 class="text-primary">{{ total_days }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Present Days</h5>
+                <h3 class="text-success">{{ present_days }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Attendance %</h5>
+                <h3 class="text-info">{{ percentage }}%</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Records -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Attendance Records</h3>
+    </div>
+    <div class="card-body">
+        {% if attendance %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance %}
+                    <tr>
+                        <td>{{ record.date.strftime('%Y-%m-%d') if record.date else '-' }}</td>
+                        <td>{{ record.student.name if record.student else '-' }}</td>
+                        <td>{{ record.class_info.class_name if record.class_info else '-' }} {{ record.class_info.section if record.class_info else '' }}</td>
+                        <td>
+                            {% if record.status == 'Present' %}
+                            <span class="badge badge-success">Present</span>
+                            {% elif record.status == 'Absent' %}
+                            <span class="badge badge-danger">Absent</span>
+                            {% else %}
+                            <span class="badge badge-warning">Late</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ record.remarks or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-calendar-check" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No attendance records found for the selected period</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

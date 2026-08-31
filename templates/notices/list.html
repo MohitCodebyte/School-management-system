@@ -1,0 +1,118 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Notices{% endblock %}
+
+{% block sidebar_brand %}{% if session.user_role == 'admin' %}SMS Admin{% elif session.user_role == 'teacher' %}SMS Teacher{% elif session.user_role == 'student' %}SMS Student{% else %}SMS{% endif %}{% endblock %}
+
+{% block sidebar_nav %}
+{% if session.user_role == 'admin' %}
+{% include "layouts/sidebar_admin.html" %}
+{% elif session.user_role == 'teacher' %}
+{% include "layouts/sidebar_teacher.html" %}
+{% elif session.user_role == 'student' %}
+{% include "layouts/sidebar_student.html" %}
+{% endif %}
+{% endblock %}
+
+{% block page_title %}Notices{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else session.user_role[0]|upper }}{% endblock %}
+{% block user_name %}{{ session.user_name or session.user_role|capitalize }}{% endblock %}
+{% block user_role %}{{ session.user_role|capitalize }}{% endblock %}
+
+{% block dashboard_content %}
+<!-- Filter Form -->
+<div class="card mb-4">
+    <form action="{{ url_for('notices.notice_list') }}" method="GET" class="d-flex gap-3">
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="priority">
+                <option value="">All Priority</option>
+                <option value="High" {% if priority_filter == 'High' %}selected{% endif %}>High</option>
+                <option value="Medium" {% if priority_filter == 'Medium' %}selected{% endif %}>Medium</option>
+                <option value="Low" {% if priority_filter == 'Low' %}selected{% endif %}>Low</option>
+            </select>
+        </div>
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="target_audience">
+                <option value="">All Audience</option>
+                <option value="All" {% if audience_filter == 'All' %}selected{% endif %}>All</option>
+                <option value="Students" {% if audience_filter == 'Students' %}selected{% endif %}>Students</option>
+                <option value="Teachers" {% if audience_filter == 'Teachers' %}selected{% endif %}>Teachers</option>
+                <option value="Parents" {% if audience_filter == 'Parents' %}selected{% endif %}>Parents</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-filter"></i> Filter
+        </button>
+        <a href="{{ url_for('notices.notice_list') }}" class="btn btn-secondary">
+            <i class="bi bi-x"></i> Clear
+        </a>
+    </form>
+</div>
+
+<!-- Notices Grid -->
+<div class="row">
+    {% for notice in notices %}
+    <div class="col-4">
+        <div class="card card-hover">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title" style="font-size: 1.1rem;">{{ notice.title }}</h4>
+                {% if notice.priority == 'High' %}
+                <span class="badge badge-danger">High</span>
+                {% elif notice.priority == 'Medium' %}
+                <span class="badge badge-warning">Medium</span>
+                {% else %}
+                <span class="badge badge-success">Low</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p style="margin-bottom: 1rem;">{{ notice.description[:150] }}{% if notice.description|length > 150 %}...{% endif %}</p>
+                <div class="d-flex justify-content-between align-items-center" style="font-size: 0.875rem; color: #64748B;">
+                    <span><i class="bi bi-calendar"></i> {{ notice.date.strftime('%Y-%m-%d') if notice.date else '-' }}</span>
+                    <span><i class="bi bi-people"></i> {{ notice.target_audience }}</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('notices.notice_edit', id=notice.id) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <form action="{{ url_for('notices.notice_delete', id=notice.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this notice?');">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not notices %}
+<div class="card">
+    <div class="card-body" style="text-align: center; padding: 3rem;">
+        <i class="bi bi-megaphone" style="font-size: 3rem; color: #CBD5E1;"></i>
+        <p style="color: #64748B; margin-top: 1rem;">No notices found</p>
+        <a href="{{ url_for('notices.notice_add') }}" class="btn btn-primary mt-3">
+            <i class="bi bi-plus-circle"></i> Add First Notice
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Add Notice Button (Floating) -->
+<div style="position: fixed; bottom: 2rem; right: 2rem;">
+    <a href="{{ url_for('notices.notice_add') }}" class="btn btn-primary btn-lg" style="border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <i class="bi bi-plus"></i>
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

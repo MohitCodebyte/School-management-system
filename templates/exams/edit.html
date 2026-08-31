@@ -1,0 +1,88 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Edit Exam{% endblock %}
+
+{% block sidebar_brand %}SMS Admin{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_admin.html" %}
+{% endblock %}
+
+{% block nav_exams_class %}active{% endblock %}
+
+{% block page_title %}Edit Exam{% endblock %}
+
+{% block user_avatar %}A{% endblock %}
+{% block user_name %}Admin{% endblock %}
+{% block user_role %}Administrator{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Edit Exam Record</h3>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('exams.exam_edit', id=exam.id) }}" method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="exam_name" class="form-label">Exam Name</label>
+                    <input type="text" class="form-control" id="exam_name" name="exam_name" required value="{{ exam.exam_name }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="student_id" class="form-label">Student</label>
+                    <select class="form-control form-select" id="student_id" name="student_id" required>
+                        <option value="">Select Student</option>
+                        {% for student in students %}
+                        <option value="{{ student.id }}" {% if exam.student_id == student.id %}selected{% endif %}>{{ student.name }} ({{ student.admission_number }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subject" name="subject" required value="{{ exam.subject }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="academic_year" class="form-label">Academic Year</label>
+                    <input type="text" class="form-control" id="academic_year" name="academic_year" value="{{ exam.academic_year or '' }}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="total_marks" class="form-label">Total Marks</label>
+                    <input type="number" class="form-control" id="total_marks" name="total_marks" required min="0" value="{{ exam.total_marks }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="marks_obtained" class="form-label">Marks Obtained</label>
+                    <input type="number" class="form-control" id="marks_obtained" name="marks_obtained" min="0" value="{{ exam.marks_obtained or '' }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="exam_date" class="form-label">Exam Date</label>
+                    <input type="date" class="form-control" id="exam_date" name="exam_date" value="{{ exam.exam_date.strftime('%Y-%m-%d') if exam.exam_date else '' }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="remarks" class="form-label">Remarks</label>
+                <textarea class="form-control" id="remarks" name="remarks" rows="3">{{ exam.remarks or '' }}</textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Update Exam Record
+                </button>
+                <a href="{{ url_for('exams.exam_list') }}" class="btn btn-secondary">
+                    <i class="bi bi-x"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

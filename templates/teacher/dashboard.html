@@ -1,0 +1,189 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Teacher Dashboard{% endblock %}
+
+{% block sidebar_brand %}SMS Teacher{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_teacher.html" %}
+{% endblock %}
+
+{% block nav_dashboard_class %}active{% endblock %}
+
+{% block page_title %}Teacher Dashboard{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else 'T' }}{% endblock %}
+{% block user_name %}{{ session.user_name or 'Teacher' }}{% endblock %}
+{% block user_role %}Teacher{% endblock %}
+
+{% block dashboard_content %}
+<!-- Dashboard Cards -->
+<div class="dashboard-cards">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="bi bi-people"></i>
+        </div>
+        <div class="stat-label">My Students</div>
+        <div class="stat-value counter-value" data-target="{{ total_students }}">{{ total_students }}</div>
+        <div class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> Active students
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="stat-icon success">
+            <i class="bi bi-calendar-check"></i>
+        </div>
+        <div class="stat-label">Today's Attendance</div>
+        <div class="stat-value">{{ attendance_percentage }}%</div>
+        <div class="stat-change positive">
+            <i class="bi bi-arrow-up"></i> {{ today_attendance }} marked
+        </div>
+    </div>
+    
+    <div class="stat-card warning">
+        <div class="stat-icon warning">
+            <i class="bi bi-grid-3x3"></i>
+        </div>
+        <div class="stat-label">My Classes</div>
+        <div class="stat-value counter-value" data-target="{{ total_classes }}">{{ total_classes }}</div>
+        <div class="stat-change">
+            <i class="bi bi-door-closed"></i> Assigned
+        </div>
+    </div>
+    
+    <div class="stat-card accent">
+        <div class="stat-icon accent">
+            <i class="bi bi-clipboard-data"></i>
+        </div>
+        <div class="stat-label">Upcoming Exams</div>
+        <div class="stat-value counter-value" data-target="{{ upcoming_exams|length }}">{{ upcoming_exams|length }}</div>
+        <div class="stat-change">
+            <i class="bi bi-clock"></i> Scheduled
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <div class="quick-action" data-url="{{ url_for('teacher.teacher_students') }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-people"></i>
+        </div>
+        <div class="quick-action-label">My Students</div>
+    </div>
+    <div class="quick-action" data-url="{{ url_for('teacher.teacher_attendance') }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-calendar-check"></i>
+        </div>
+        <div class="quick-action-label">Mark Attendance</div>
+    </div>
+    <div class="quick-action" data-url="{{ url_for('teacher.teacher_exams') }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-clipboard-data"></i>
+        </div>
+        <div class="quick-action-label">Manage Exams</div>
+    </div>
+    <div class="quick-action" data-url="{{ url_for('teacher.teacher_notices') }}">
+        <div class="quick-action-icon">
+            <i class="bi bi-megaphone"></i>
+        </div>
+        <div class="quick-action-label">Create Notice</div>
+    </div>
+</div>
+
+<!-- My Classes -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">My Classes</h3>
+    </div>
+    <div class="card-body">
+        {% if teacher_classes %}
+        <div class="dashboard-grid">
+            {% for class_obj in teacher_classes %}
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="bi bi-grid-3x3"></i>
+                </div>
+                <div class="stat-label">Class {{ class_obj.class_name }} - {{ class_obj.section }}</div>
+                <div class="stat-value">{{ class_obj.capacity }}</div>
+                <div class="stat-change">
+                    <i class="bi bi-door-closed"></i> Room: {{ class_obj.room_number }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: #64748B; text-align: center; padding: 2rem;">No classes assigned</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Notices -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Recent Notices</h3>
+    </div>
+    <div class="card-body">
+        {% if recent_notices %}
+        <div class="activity-feed">
+            {% for notice in recent_notices %}
+            <div class="activity-item">
+                <div class="activity-icon add">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ notice.title }}</div>
+                    <div class="activity-time">{{ notice.created_at.strftime('%Y-%m-%d %H:%M') if notice.created_at else '' }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: #64748B; text-align: center; padding: 2rem;">No recent notices</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Upcoming Exams -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Upcoming Exams</h3>
+    </div>
+    <div class="card-body">
+        {% if upcoming_exams %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Exam</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in upcoming_exams %}
+                    <tr>
+                        <td>{{ exam.exam_name }}</td>
+                        <td>{{ exam.subject }}</td>
+                        <td>{{ exam.exam_date.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #64748B; text-align: center; padding: 2rem;">No upcoming exams</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

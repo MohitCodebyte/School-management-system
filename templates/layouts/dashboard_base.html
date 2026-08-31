@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}{% block dashboard_title %}Dashboard{% endblock %} - School Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #F8FAFC;
+    }
+    
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+    }
+    
+    .notification-widget {
+        position: relative;
+    }
+    
+    .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #EF4444;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+    
+    .notification-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 350px;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        display: none;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .notification-dropdown.show {
+        display: block;
+    }
+    
+    .notification-item {
+        padding: 1rem;
+        border-bottom: 1px solid #E5E7EB;
+        transition: background 0.2s ease;
+    }
+    
+    .notification-item:hover {
+        background: #F9FAFB;
+    }
+    
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+    
+    .notification-title {
+        font-weight: 600;
+        color: #1F2937;
+        margin-bottom: 0.25rem;
+    }
+    
+    .notification-message {
+        color: #6B7280;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .notification-time {
+        color: #9CA3AF;
+        font-size: 0.75rem;
+    }
+    
+    .notification-pinned {
+        background: #FEF3C7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <i class="bi bi-mortarboard"></i>
+                <span>{% block sidebar_brand %}SMS{% endblock %}</span>
+            </div>
+        </div>
+        
+        <nav>
+            <ul class="sidebar-nav">
+                {% block sidebar_nav %}
+                {% endblock %}
+            </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="{{ url_for('auth.logout') }}" class="sidebar-nav-link" style="color: #EF4444;">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="top-bar-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
+            <div class="top-bar-right">
+                <!-- Notification Widget -->
+                {% if notifications %}
+                <div class="notification-widget me-3">
+                    <button class="btn btn-light position-relative" onclick="toggleNotifications()">
+                        <i class="bi bi-bell"></i>
+                        <span class="notification-badge">{{ notifications|length }}</span>
+                    </button>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        {% if notifications %}
+                            {% for notification in notifications %}
+                            <div class="notification-item {% if notification.is_pinned %}notification-pinned{% endif %}">
+                                <div class="notification-title">
+                                    {% if notification.is_pinned %}<i class="bi bi-pin-fill me-1"></i>{% endif %}
+                                    {{ notification.title }}
+                                </div>
+                                <div class="notification-message">{{ notification.message }}</div>
+                                <div class="notification-time">{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="notification-item">
+                                <div class="notification-message">No notifications</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="user-profile">
+                    <div class="user-avatar">{% block user_avatar %}A{% endblock %}</div>
+                    <div class="user-info">
+                        <span class="user-name">{% block user_name %}Admin{% endblock %}</span>
+                        <span class="user-role">{% block user_role %}Administrator{% endblock %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Content -->
+        {% block dashboard_content %}{% endblock %}
+    </main>
+</div>
+
+<script>
+function toggleNotifications() {
+    const dropdown = document.getElementById('notificationDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('notificationDropdown');
+    const button = event.target.closest('.notification-widget');
+    if (dropdown && !button && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Set active class on sidebar links based on current URL
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav-link');
+    
+    sidebarLinks.forEach(link => {
+        const linkPath = new URL(link.href).pathname;
+        if (currentPath === linkPath || currentPath.startsWith(linkPath + '/')) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

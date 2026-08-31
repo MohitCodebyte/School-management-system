@@ -1,0 +1,71 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}Notices - Student Dashboard{% endblock %}
+
+{% block sidebar_brand %}Student Portal{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_student.html" %}
+{% endblock %}
+
+{% block page_title %}Notices{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else 'S' }}{% endblock %}
+
+{% block user_name %}{{ session.user_name or 'Student' }}{% endblock %}
+
+{% block user_role %}Student{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Notices & Announcements</h3>
+    </div>
+    <div class="card-body">
+        {% if notices %}
+        <div class="activity-feed">
+            {% for notice in notices %}
+            <div class="activity-item">
+                <div class="activity-icon add">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ notice.title }}</div>
+                    <div class="activity-description">{{ notice.description[:200] }}{% if notice.description|length > 200 %}...{% endif %}</div>
+                    <div class="activity-time">{{ notice.created_at.strftime('%Y-%m-%d %H:%M') if notice.created_at else '' }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: #64748B; text-align: center; padding: 2rem;">No notices available</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Notifications</h3>
+    </div>
+    <div class="card-body">
+        {% if notifications %}
+        <div class="activity-feed">
+            {% for notification in notifications %}
+            <div class="activity-item">
+                <div class="activity-icon info">
+                    <i class="bi bi-bell"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ notification.title }}</div>
+                    <div class="activity-description">{{ notification.message[:200] }}{% if notification.message|length > 200 %}...{% endif %}</div>
+                    <div class="activity-time">{{ notification.created_at.strftime('%Y-%m-%d %H:%M') if notification.created_at else '' }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: #64748B; text-align: center; padding: 2rem;">No notifications available</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

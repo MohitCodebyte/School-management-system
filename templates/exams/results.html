@@ -1,0 +1,92 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Exam Results Summary{% endblock %}
+
+{% block sidebar_brand %}SMS Admin{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_admin.html" %}
+{% endblock %}
+
+{% block nav_exams_class %}active{% endblock %}
+
+{% block page_title %}Exam Results Summary{% endblock %}
+
+{% block user_avatar %}A{% endblock %}
+{% block user_name %}Admin{% endblock %}
+{% block user_role %}Administrator{% endblock %}
+
+{% block dashboard_content %}
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Exams</h5>
+                <h3 class="text-primary">{{ total_exams }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Passed Exams</h5>
+                <h3 class="text-success">{{ passed_exams }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Pass Percentage</h5>
+                <h3 class="text-info">{{ pass_percentage }}%</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Average Marks by Subject -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Average Marks by Subject</h3>
+        <a href="{{ url_for('exams.exam_list') }}" class="btn btn-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Exams
+        </a>
+    </div>
+    <div class="card-body">
+        {% if subject_avg %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Average Marks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject, avg_marks in subject_avg %}
+                    <tr>
+                        <td>{{ subject or '-' }}</td>
+                        <td>{{ "{:.2f}".format(avg_marks or 0) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-clipboard-data" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No exam results available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

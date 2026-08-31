@@ -1,0 +1,108 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Reports{% endblock %}
+
+{% block sidebar_brand %}{% if session.user_role == 'admin' %}SMS Admin{% elif session.user_role == 'teacher' %}SMS Teacher{% elif session.user_role == 'student' %}SMS Student{% else %}SMS{% endif %}{% endblock %}
+
+{% block sidebar_nav %}
+{% if session.user_role == 'admin' %}
+{% include "layouts/sidebar_admin.html" %}
+{% elif session.user_role == 'teacher' %}
+{% include "layouts/sidebar_teacher.html" %}
+{% elif session.user_role == 'student' %}
+{% include "layouts/sidebar_student.html" %}
+{% endif %}
+{% endblock %}
+
+{% block page_title %}Reports{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else session.user_role[0]|upper }}{% endblock %}
+{% block user_name %}{{ session.user_name or session.user_role|capitalize }}{% endblock %}
+{% block user_role %}{{ session.user_role|capitalize }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border-color: #2563EB;
+    }
+    
+    .report-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Reports Grid -->
+<div class="row">
+    <div class="col-4">
+        <div class="report-card" onclick="window.location.href='{{ url_for('reports.student_report') }}'">
+            <div class="report-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h3>Student Report</h3>
+            <p style="color: #64748B; margin-top: 0.5rem;">View comprehensive student information and statistics</p>
+        </div>
+    </div>
+    
+    <div class="col-4">
+        <div class="report-card" onclick="window.location.href='{{ url_for('reports.attendance_report') }}'">
+            <div class="report-icon">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <h3>Attendance Report</h3>
+            <p style="color: #64748B; margin-top: 0.5rem;">Track attendance patterns and generate summaries</p>
+        </div>
+    </div>
+    
+    <div class="col-4">
+        <div class="report-card" onclick="window.location.href='{{ url_for('reports.fee_report') }}'">
+            <div class="report-icon">
+                <i class="bi bi-cash"></i>
+            </div>
+            <h3>Fee Report</h3>
+            <p style="color: #64748B; margin-top: 0.5rem;">Monitor fee collection and outstanding payments</p>
+        </div>
+    </div>
+    
+    <div class="col-4">
+        <div class="report-card" onclick="window.location.href='{{ url_for('reports.exam_report') }}'">
+            <div class="report-icon">
+                <i class="bi bi-clipboard-data"></i>
+            </div>
+            <h3>Exam Report</h3>
+            <p style="color: #64748B; margin-top: 0.5rem;">Analyze exam results and student performance</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

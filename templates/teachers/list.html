@@ -1,0 +1,89 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Teachers{% endblock %}
+
+{% block sidebar_brand %}SMS Admin{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_admin.html" %}
+{% endblock %}
+
+{% block nav_teachers_class %}active{% endblock %}
+
+{% block page_title %}Teachers{% endblock %}
+
+{% block user_avatar %}A{% endblock %}
+{% block user_name %}Admin{% endblock %}
+{% block user_role %}Administrator{% endblock %}
+
+{% block dashboard_content %}
+<!-- Teachers Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">All Teachers</h3>
+        <div class="d-flex gap-2">
+            <span class="badge badge-primary">{{ teachers|length }} Teachers</span>
+            <a href="{{ url_for('teachers.teacher_add') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-person-plus"></i> Add Teacher
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if teachers %}
+        <div class="table-container">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <th>Qualification</th>
+                        <th>Experience</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.name }}</td>
+                        <td>{{ teacher.subject or '-' }}</td>
+                        <td>{{ teacher.qualification or '-' }}</td>
+                        <td>{{ teacher.experience or 0 }} Years</td>
+                        <td>{{ teacher.phone or '-' }}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('teachers.teacher_edit', id=teacher.id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ url_for('teachers.teacher_delete', id=teacher.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this teacher?');">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-person-workspace" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No teachers found</p>
+            <a href="{{ url_for('teachers.teacher_add') }}" class="btn btn-primary mt-3">
+                <i class="bi bi-person-plus"></i> Add First Teacher
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

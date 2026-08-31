@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - School Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #F8FAFC;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <i class="bi bi-mortarboard"></i>
+                <span>SMS Admin</span>
+            </div>
+        </div>
+        
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('dashboard.dashboard_home') }}" class="sidebar-nav-link">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('students.student_list') }}" class="sidebar-nav-link active">
+                        <i class="bi bi-people"></i>
+                        <span>Students</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('teachers.teacher_list') }}" class="sidebar-nav-link">
+                        <i class="bi bi-person-workspace"></i>
+                        <span>Teachers</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('auth.logout') }}" class="sidebar-nav-link" style="color: #EF4444;">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="top-bar-title">Edit Student</h1>
+            </div>
+            <div class="top-bar-right">
+                <a href="{{ url_for('students.student_list') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+        
+        <!-- Edit Student Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Edit Student Information</h3>
+                <span class="badge badge-primary">{{ student.admission_number }}</span>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('students.student_edit', id=student.id) }}" data-validate>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label" for="admission_number">Admission Number *</label>
+                                <input type="text" class="form-control" id="admission_number" name="admission_number" value="{{ student.admission_number }}" placeholder="Enter admission number" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label" for="name">Full Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ student.name }}" placeholder="Enter student name" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label class="form-label" for="class">Class *</label>
+                                <select class="form-control form-select" id="class" name="class" required>
+                                    <option value="">Select Class</option>
+                                    <option value="1" {% if student.class_name == '1' %}selected{% endif %}>Class 1</option>
+                                    <option value="2" {% if student.class_name == '2' %}selected{% endif %}>Class 2</option>
+                                    <option value="3" {% if student.class_name == '3' %}selected{% endif %}>Class 3</option>
+                                    <option value="4" {% if student.class_name == '4' %}selected{% endif %}>Class 4</option>
+                                    <option value="5" {% if student.class_name == '5' %}selected{% endif %}>Class 5</option>
+                                    <option value="6" {% if student.class_name == '6' %}selected{% endif %}>Class 6</option>
+                                    <option value="7" {% if student.class_name == '7' %}selected{% endif %}>Class 7</option>
+                                    <option value="8" {% if student.class_name == '8' %}selected{% endif %}>Class 8</option>
+                                    <option value="9" {% if student.class_name == '9' %}selected{% endif %}>Class 9</option>
+                                    <option value="10" {% if student.class_name == '10' %}selected{% endif %}>Class 10</option>
+                                    <option value="11" {% if student.class_name == '11' %}selected{% endif %}>Class 11</option>
+                                    <option value="12" {% if student.class_name == '12' %}selected{% endif %}>Class 12</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label class="form-label" for="section">Section</label>
+                                <select class="form-control form-select" id="section" name="section">
+                                    <option value="">Select Section</option>
+                                    <option value="A" {% if student.section == 'A' %}selected{% endif %}>Section A</option>
+                                    <option value="B" {% if student.section == 'B' %}selected{% endif %}>Section B</option>
+                                    <option value="C" {% if student.section == 'C' %}selected{% endif %}>Section C</option>
+                                    <option value="D" {% if student.section == 'D' %}selected{% endif %}>Section D</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label class="form-label" for="gender">Gender</label>
+                                <select class="form-control form-select" id="gender" name="gender">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                                    <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label" for="parent_name">Parent/Guardian Name *</label>
+                                <input type="text" class="form-control" id="parent_name" name="parent_name" value="{{ student.parent_name or '' }}" placeholder="Enter parent name" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ student.phone or '' }}" placeholder="Enter phone number" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ student.email or '' }}" placeholder="Enter email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="address">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter complete address">{{ student.address or '' }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label" for="date_of_birth">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ student.date_of_birth.strftime('%Y-%m-%d') if student.date_of_birth else '' }}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label" for="admission_date">Admission Date</label>
+                                <input type="date" class="form-control" id="admission_date" name="admission_date" value="{{ student.admission_date.strftime('%Y-%m-%d') if student.admission_date else '' }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Update Student
+                        </button>
+                        <a href="{{ url_for('students.student_list') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+        initFormValidation();
+    });
+</script>
+{% endblock %}

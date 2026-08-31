@@ -1,0 +1,110 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Attendance{% endblock %}
+
+{% block sidebar_brand %}SMS Admin{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_admin.html" %}
+{% endblock %}
+
+{% block nav_attendance_class %}active{% endblock %}
+
+{% block page_title %}Attendance{% endblock %}
+
+{% block user_avatar %}A{% endblock %}
+{% block user_name %}Admin{% endblock %}
+{% block user_role %}Administrator{% endblock %}
+
+{% block dashboard_content %}
+<!-- Filter Form -->
+<div class="card mb-4">
+    <form action="{{ url_for('attendance.attendance_list') }}" method="GET" class="d-flex gap-3">
+        <div style="flex: 1;">
+            <input type="date" class="form-control" name="date" value="{{ date_filter }}">
+        </div>
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="class_id">
+                <option value="">All Classes</option>
+                {% for cls in classes %}
+                <option value="{{ cls.id }}" {% if class_filter == cls.id|string %}selected{% endif %}>
+                    {{ cls.class_name }} - {{ cls.section or 'N/A' }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-filter"></i> Filter
+        </button>
+        <a href="{{ url_for('attendance.attendance_list') }}" class="btn btn-secondary">
+            <i class="bi bi-x"></i> Clear
+        </a>
+        <a href="{{ url_for('attendance.attendance_mark') }}" class="btn btn-primary">
+            <i class="bi bi-calendar-plus"></i> Mark Attendance
+        </a>
+        <a href="{{ url_for('attendance.attendance_report') }}" class="btn btn-secondary">
+            <i class="bi bi-file-earmark-bar-graph"></i> Reports
+        </a>
+    </form>
+</div>
+
+<!-- Attendance Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Attendance Records</h3>
+        <span class="badge badge-primary">{{ attendance|length }} Records</span>
+    </div>
+    <div class="card-body">
+        {% if attendance %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance %}
+                    <tr>
+                        <td>{{ record.date.strftime('%Y-%m-%d') if record.date else '-' }}</td>
+                        <td>{{ record.student.name if record.student else '-' }}</td>
+                        <td>{{ record.class_info.class_name if record.class_info else '-' }} {{ record.class_info.section if record.class_info else '' }}</td>
+                        <td>
+                            {% if record.status == 'Present' %}
+                            <span class="badge badge-success">Present</span>
+                            {% elif record.status == 'Absent' %}
+                            <span class="badge badge-danger">Absent</span>
+                            {% else %}
+                            <span class="badge badge-warning">Late</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ record.remarks or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-calendar-check" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No attendance records found</p>
+            <a href="{{ url_for('attendance.attendance_mark') }}" class="btn btn-primary mt-3">
+                <i class="bi bi-calendar-plus"></i> Mark First Attendance
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Notification - School Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil"></i> Edit Notification
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('notifications.edit_notification', id=notification.id) }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ notification.title }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message *</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required>{{ notification.message }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="target_role" class="form-label">Target Audience *</label>
+                            <select class="form-select" id="target_role" name="target_role" required>
+                                <option value="">Select Target</option>
+                                <option value="all" {% if notification.target_role == 'all' %}selected{% endif %}>Everyone</option>
+                                <option value="admin" {% if notification.target_role == 'admin' %}selected{% endif %}>Admins Only</option>
+                                <option value="teacher" {% if notification.target_role == 'teacher' %}selected{% endif %}>Teachers Only</option>
+                                <option value="student" {% if notification.target_role == 'student' %}selected{% endif %}>Students Only</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="target_class" class="form-label">Target Class (Optional)</label>
+                                <input type="text" class="form-control" id="target_class" name="target_class" value="{{ notification.target_class or '' }}" placeholder="e.g., 10">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="target_section" class="form-label">Target Section (Optional)</label>
+                                <input type="text" class="form-control" id="target_section" name="target_section" value="{{ notification.target_section or '' }}" placeholder="e.g., A">
+                            </div>
+                        </div>
+                        
+                        {% if session.user_role == 'admin' %}
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_pinned" name="is_pinned" {% if notification.is_pinned %}checked{% endif %}>
+                            <label class="form-check-label" for="is_pinned">
+                                <i class="bi bi-pin-fill"></i> Pin this notification
+                            </label>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Update Notification
+                            </button>
+                            <a href="{{ url_for('notifications.notifications_list') }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

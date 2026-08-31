@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Student Profile - School Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #F8FAFC;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 1rem 1rem 0 0;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #2563EB;
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .info-item {
+        background: #F8FAFC;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid #E2E8F0;
+    }
+    
+    .info-label {
+        font-size: 0.875rem;
+        color: #64748B;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .info-value {
+        font-size: 1.1rem;
+        color: #0F172A;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <i class="bi bi-mortarboard"></i>
+                <span>SMS Admin</span>
+            </div>
+        </div>
+        
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('dashboard.dashboard_home') }}" class="sidebar-nav-link">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('students.student_list') }}" class="sidebar-nav-link active">
+                        <i class="bi bi-people"></i>
+                        <span>Students</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('teachers.teacher_list') }}" class="sidebar-nav-link">
+                        <i class="bi bi-person-workspace"></i>
+                        <span>Teachers</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('auth.logout') }}" class="sidebar-nav-link" style="color: #EF4444;">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="top-bar-title">Student Profile</h1>
+            </div>
+            <div class="top-bar-right">
+                <a href="{{ url_for('students.student_edit', id=student.id) }}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{{ url_for('students.student_list') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+        
+        <!-- Student Profile Card -->
+        <div class="card">
+            <div class="profile-header">
+                <div class="d-flex align-items-center gap-4">
+                    <div class="profile-avatar">
+                        {{ student.name[0] }}
+                    </div>
+                    <div>
+                        <h2 style="margin-bottom: 0.5rem;">{{ student.name }}</h2>
+                        <p style="margin-bottom: 0.25rem; opacity: 0.9;">Admission No: {{ student.admission_number }}</p>
+                        <p style="margin: 0; opacity: 0.8;">Class {{ student.class_name }}{% if student.section %} - Section {{ student.section }}{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem;">
+                <h3 style="margin-bottom: 1.5rem;">Personal Information</h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Admission Number</div>
+                        <div class="info-value">{{ student.admission_number }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ student.name }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Class</div>
+                        <div class="info-value">{{ student.class_name }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Section</div>
+                        <div class="info-value">{{ student.section or 'Not Assigned' }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Gender</div>
+                        <div class="info-value">{{ student.gender or 'Not Specified' }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Date of Birth</div>
+                        <div class="info-value">{{ student.date_of_birth.strftime('%Y-%m-%d') if student.date_of_birth else 'Not Specified' }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Admission Date</div>
+                        <div class="info-value">{{ student.admission_date.strftime('%Y-%m-%d') if student.admission_date else 'Not Specified' }}</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 2rem 0 1.5rem;">Parent/Guardian Information</h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Parent/Guardian Name</div>
+                        <div class="info-value">{{ student.parent_name or 'Not Specified' }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Phone Number</div>
+                        <div class="info-value">{{ student.phone or 'Not Specified' }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Email Address</div>
+                        <div class="info-value">{{ student.email or 'Not Specified' }}</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 2rem 0 1.5rem;">Contact Information</h3>
+                
+                <div class="info-item" style="grid-column: 1 / -1;">
+                    <div class="info-label">Address</div>
+                    <div class="info-value">{{ student.address or 'Not Specified' }}</div>
+                </div>
+                
+                <div class="d-flex gap-3 mt-4">
+                    <a href="{{ url_for('students.student_edit', id=student.id) }}" class="btn btn-primary">
+                        <i class="bi bi-pencil"></i> Edit Profile
+                    </a>
+                    <a href="{{ url_for('attendance.attendance_list') }}" class="btn btn-secondary">
+                        <i class="bi bi-calendar-check"></i> View Attendance
+                    </a>
+                    <a href="{{ url_for('fees.fee_list') }}" class="btn btn-secondary">
+                        <i class="bi bi-cash"></i> View Fees
+                    </a>
+                    <a href="{{ url_for('exams.exam_list') }}" class="btn btn-secondary">
+                        <i class="bi bi-clipboard-data"></i> View Exams
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

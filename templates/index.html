@@ -1,0 +1,828 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - School Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Landing Page Specific Styles */
+    .landing-page {
+        overflow-x: hidden;
+    }
+    
+    /* Hero Section */
+    .hero {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #2563EB 100%);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    
+    .hero-content {
+        text-align: center;
+        color: white;
+        z-index: 10;
+        padding: 2rem;
+    }
+    
+    .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        color: #FFFFFF;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: slideUp 1s ease;
+    }
+    
+    .hero p {
+        font-size: 1.25rem;
+            margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.85);
+        animation: slideUp 1s ease 0.2s backwards;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        animation: slideUp 1s ease 0.4s backwards;
+    }
+    
+    .floating-shape {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.1;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .shape-1 {
+        width: 400px;
+        height: 400px;
+        background: #3B82F6;
+        top: -200px;
+        right: -200px;
+    }
+    
+    .shape-2 {
+        width: 300px;
+        height: 300px;
+        background: #06B6D4;
+        bottom: -150px;
+        left: -150px;
+        animation-delay: 2s;
+    }
+    
+    .shape-3 {
+        width: 200px;
+        height: 200px;
+        background: #10B981;
+        top: 50%;
+        left: 10%;
+        animation-delay: 4s;
+    }
+    
+    /* Statistics Counter */
+    .stats-section {
+        padding: 4rem 0;
+        background: white;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 2rem;
+        background: #F8FAFC;
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #2563EB;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: #64748B;
+        font-weight: 500;
+    }
+    
+    /* Section Styles */
+    .section {
+        padding: 5rem 0;
+    }
+    
+    .section-dark {
+        background: #F8FAFC;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #0F172A;
+    }
+    
+    .section-header p {
+        font-size: 1.1rem;
+        color: #64748B;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* About Section */
+    .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .about-image {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .about-image img {
+        width: 100%;
+        height: auto;
+        transition: transform 0.3s ease;
+    }
+    
+    .about-image:hover img {
+        transform: scale(1.05);
+    }
+    
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .feature-card h3 {
+        margin-bottom: 1rem;
+        color: #0F172A;
+        font-weight: 700;
+    }
+    
+    .feature-card p {
+        color: #64748B;
+        line-height: 1.6;
+    }
+    
+    /* Gallery Grid */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .gallery-item {
+        border-radius: 1rem;
+        overflow: hidden;
+        aspect-ratio: 4/3;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    
+    .gallery-item:hover {
+        transform: scale(1.05);
+    }
+    
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    /* Testimonials */
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .testimonial-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+    
+    .testimonial-card::before {
+        content: '"';
+        font-size: 5rem;
+        color: #2563EB;
+        opacity: 0.1;
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        font-family: Georgia, serif;
+    }
+    
+    .testimonial-text {
+        font-style: italic;
+        color: #64748B;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .testimonial-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .testimonial-name {
+        font-weight: 600;
+        color: #0F172A;
+    }
+    
+    .testimonial-role {
+        font-size: 0.875rem;
+        color: #64748B;
+    }
+    
+    /* Contact Section */
+    .contact-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .contact-info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+    }
+    
+    /* Footer */
+    .footer {
+        background: #0F172A;
+        color: white;
+        padding: 4rem 0 2rem;
+    }
+
+    .footer strong {
+        color: #38bdf8;
+    }
+
+    .footer small {
+        line-height: 1.8;
+    }
+    
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .footer h4 {
+        margin-bottom: 1.5rem;
+        color: white;
+        font-weight: 700;
+    }
+    
+    .footer-links {
+        list-style: none;
+    }
+    
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+        color: rgba(255, 255, 255, 0.85);
+        transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+        color: white;
+    }
+    
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.8);
+    }
+
+    .footer-bottom p {
+        margin: 0;
+        color: rgba(255,255,255,0.8);
+    }
+
+    .footer-bottom strong {
+        color: #38bdf8;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2rem;
+        }
+        
+        .about-content,
+        .contact-content {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-page">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        
+        <div class="hero-content">
+            <h1>Welcome to Excellence in Education</h1>
+            <p>Empowering students to achieve their dreams through innovative learning and comprehensive development.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> Login to Portal
+                </a>
+                <a href="#about" class="btn btn-secondary btn-lg text-on-dark">
+                    <i class="bi bi-info-circle"></i> Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item reveal">
+                <div class="stat-number counter" data-target="2500">0</div>
+                <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number counter" data-target="150">0</div>
+                <div class="stat-label">Teachers</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number counter" data-target="50">0</div>
+                <div class="stat-label">Years of Excellence</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-number counter" data-target="95">0</div>
+                <div class="stat-label">Pass Rate %</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section class="section" id="about">
+        <div class="section-header">
+            <h2>About Our School</h2>
+            <p>Nurturing minds, building character, and shaping futures since 1974</p>
+        </div>
+        <div class="about-content">
+            <div class="about-text reveal-left">
+                <h3>A Legacy of Excellence</h3>
+                <p>Our school has been a beacon of educational excellence for over five decades. We believe in holistic development of every student, combining academic rigor with character building and practical skills.</p>
+                <p>Our state-of-the-art facilities, experienced faculty, and innovative curriculum ensure that every student receives the best possible education and preparation for their future endeavors.</p>
+                <div class="d-flex gap-3 mt-4">
+                    <a href="#contact" class="btn btn-primary">Contact Us</a>
+                    <a href="#programs" class="btn btn-secondary">Our Programs</a>
+                </div>
+            </div>
+            <div class="about-image reveal-right">
+                <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop" alt="School Building">
+            </div>
+        </div>
+    </section>
+    
+    <!-- Why Choose Us -->
+    <section class="section section-dark" id="features">
+        <div class="section-header">
+            <h2>Why Choose Us</h2>
+            <p>Discover what makes our school the perfect choice for your child's education</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <h3>Expert Faculty</h3>
+                <p>Highly qualified and experienced teachers dedicated to student success</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-laptop"></i>
+                </div>
+                <h3>Modern Technology</h3>
+                <p>Smart classrooms and digital learning tools for enhanced education</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <h3>Sports Facilities</h3>
+                <p>Comprehensive sports programs and world-class athletic facilities</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-flower1"></i>
+                </div>
+                <h3>Holistic Development</h3>
+                <p>Focus on academic, physical, and emotional growth of students</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h3>Safe Environment</h3>
+                <p>Secure campus with 24/7 surveillance and safety measures</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-globe"></i>
+                </div>
+                <h3>Global Perspective</h3>
+                <p>International curriculum and exchange programs for global exposure</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Facilities -->
+    <section class="section" id="facilities">
+        <div class="section-header">
+            <h2>Our Facilities</h2>
+            <p>World-class infrastructure to support comprehensive learning</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item reveal">
+                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=400&h=300&fit=crop" alt="Library">
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=400&h=300&fit=crop" alt="Science Lab">
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=400&h=300&fit=crop" alt="Computer Lab">
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://images.unsplash.com/photo-1461896836934- voices?w=400&h=300&fit=crop" alt="Sports Ground">
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://images.unsplash.com/photo-1555212697-194d092e3b8f?w=400&h=300&fit=crop" alt="Auditorium">
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=400&h=300&fit=crop" alt="Cafeteria">
+            </div>
+        </div>
+    </section>
+    
+    <!-- Academic Programs -->
+    <section class="section section-dark" id="programs">
+        <div class="section-header">
+            <h2>Academic Programs</h2>
+            <p>Comprehensive curriculum designed for all age groups</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-star"></i>
+                </div>
+                <h3>Primary School</h3>
+                <p>Grades 1-5: Building strong foundations in core subjects</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-book"></i>
+                </div>
+                <h3>Middle School</h3>
+                <p>Grades 6-8: Developing critical thinking and analytical skills</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-award"></i>
+                </div>
+                <h3>High School</h3>
+                <p>Grades 9-12: Preparing students for higher education and careers</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials -->
+    <section class="section" id="testimonials">
+        <div class="section-header">
+            <h2>What Parents Say</h2>
+            <p>Hear from our satisfied parents and alumni</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+                <p class="testimonial-text">"The school has transformed my child's learning experience. The teachers are dedicated and the facilities are excellent."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">RS</div>
+                    <div>
+                        <div class="testimonial-name">Rajesh Sharma</div>
+                        <div class="testimonial-role">Parent of Grade 8 Student</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <p class="testimonial-text">"My daughter has flourished here. The holistic approach to education has helped her develop confidence and leadership skills."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">PK</div>
+                    <div>
+                        <div class="testimonial-name">Priya Kumar</div>
+                        <div class="testimonial-role">Parent of Grade 10 Student</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <p class="testimonial-text">"The school's focus on both academics and extracurricular activities is remarkable. My son loves going to school every day."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">AM</div>
+                    <div>
+                        <div class="testimonial-name">Amit Mehta</div>
+                        <div class="testimonial-role">Parent of Grade 6 Student</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Achievements -->
+    <section class="section section-dark" id="achievements">
+        <div class="section-header">
+            <h2>Our Achievements</h2>
+            <p>Celebrating excellence in academics, sports, and beyond</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-trophy-fill"></i>
+                </div>
+                <h3>100% Board Results</h3>
+                <p>Consistent 100% pass rate in board examinations for the past 10 years</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-medal"></i>
+                </div>
+                <h3>National Champions</h3>
+                <p>Multiple national-level winners in science and sports competitions</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-award-fill"></i>
+                </div>
+                <h3>Best School Award</h3>
+                <p>Recognized as the best school in the region for 3 consecutive years</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Admission Process -->
+    <section class="section" id="admission">
+        <div class="section-header">
+            <h2>Admission Process</h2>
+            <p>Simple and transparent admission procedure</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-1-circle"></i>
+                </div>
+                <h3>Step 1: Apply Online</h3>
+                <p>Fill out the online application form with required details</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-2-circle"></i>
+                </div>
+                <h3>Step 2: Assessment</h3>
+                <p>Attend the entrance assessment and interview</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <i class="bi bi-3-circle"></i>
+                </div>
+                <h3>Step 3: Documentation</h3>
+                <p>Submit required documents and complete admission formalities</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section class="section section-dark" id="contact">
+        <div class="section-header">
+            <h2>Contact Us</h2>
+            <p>Get in touch with us for any queries</p>
+        </div>
+        <div class="contact-content">
+            <div class="contact-info reveal-left">
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div>
+                        <h4>Address</h4>
+                        <p>123 Education Street, Knowledge City, State - 123456</p>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <i class="bi bi-telephone"></i>
+                    </div>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>+91 98765 43210</p>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    <div>
+                        <h4>Email</h4>
+                        <p>info@school.edu</p>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div>
+                        <h4>Office Hours</h4>
+                        <p>Monday - Friday: 8:00 AM - 4:00 PM</p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form reveal-right">
+                <form class="card">
+                    <div class="form-group">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" class="form-control" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" rows="4" placeholder="Your message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-send"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h4>About Us</h4>
+                <p style="color: rgba(255,255,255,0.7);">Empowering students to achieve their dreams through innovative learning and comprehensive development.</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#about">About School</a></li>
+                    <li><a href="#programs">Academic Programs</a></li>
+                    <li><a href="#admission">Admissions</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Student Portal</a></li>
+                    <li><a href="#">Parent Portal</a></li>
+                    <li><a href="#">Library</a></li>
+                    <li><a href="#">Calendar</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Connect With Us</h4>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="#" class="btn btn-secondary btn-sm"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="btn btn-secondary btn-sm"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="btn btn-secondary btn-sm"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="btn btn-secondary btn-sm"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>
+                © 2026 NexvoraTech LLP. All Rights Reserved.
+                <br>
+                Developed by <strong>Mohit Kushwah</strong>
+            </p>
+        </div>
+
+    </footer>
+</div>
+{% endblock %}

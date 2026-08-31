@@ -1,0 +1,124 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Student Report{% endblock %}
+
+{% block sidebar_brand %}{% if session.user_role == 'admin' %}SMS Admin{% elif session.user_role == 'teacher' %}SMS Teacher{% elif session.user_role == 'student' %}SMS Student{% else %}SMS{% endif %}{% endblock %}
+
+{% block sidebar_nav %}
+{% if session.user_role == 'admin' %}
+{% include "layouts/sidebar_admin.html" %}
+{% elif session.user_role == 'teacher' %}
+{% include "layouts/sidebar_teacher.html" %}
+{% elif session.user_role == 'student' %}
+{% include "layouts/sidebar_student.html" %}
+{% endif %}
+{% endblock %}
+
+{% block page_title %}Student Report{% endblock %}
+
+{% block user_avatar %}{{ session.user_name[0] if session.user_name else session.user_role[0]|upper }}{% endblock %}
+{% block user_name %}{{ session.user_name or session.user_role|capitalize }}{% endblock %}
+{% block user_role %}{{ session.user_role|capitalize }}{% endblock %}
+
+{% block dashboard_content %}
+<!-- Filter Form -->
+<div class="card mb-4">
+    <form action="{{ url_for('reports.student_report') }}" method="GET" class="d-flex gap-3">
+        <div style="flex: 1;">
+            <select class="form-control form-select" name="class">
+                <option value="">All Classes</option>
+                {% for cls in classes %}
+                <option value="{{ cls[0] }}" {% if class_filter == cls[0] %}selected{% endif %}>
+                    {{ cls[0] }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-filter"></i> Filter
+        </button>
+        <a href="{{ url_for('reports.student_report') }}" class="btn btn-secondary">
+            <i class="bi bi-x"></i> Clear
+        </a>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="dashboard-cards mb-4">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="bi bi-people"></i>
+        </div>
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value">{{ students|length }}</div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-icon success">
+            <i class="bi bi-grid-3x3"></i>
+        </div>
+        <div class="stat-label">Total Classes</div>
+        <div class="stat-value">{{ classes|length }}</div>
+    </div>
+</div>
+
+<!-- Students Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Student List</h3>
+        <div class="d-flex gap-2">
+            <span class="badge badge-primary">{{ students|length }} Students</span>
+            <a href="{{ url_for('reports.export_report', report_type='students') }}" class="btn btn-success btn-sm">
+                <i class="bi bi-download"></i> Export CSV
+            </a>
+            <a href="{{ url_for('reports.reports_home') }}" class="btn btn-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if students %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Admission No</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Parent Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.admission_number }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.class_name }}</td>
+                        <td>{{ student.section or '-' }}</td>
+                        <td>{{ student.parent_name or '-' }}</td>
+                        <td>{{ student.phone or '-' }}</td>
+                        <td>{{ student.email or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-people" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No students found</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+    });
+</script>
+{% endblock %}

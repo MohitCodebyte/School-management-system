@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Post Notification - School Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle"></i> Post Notification to Students
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('notifications.create_teacher_notification') }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required placeholder="e.g., Mathematics Assignment Due">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message *</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Enter your notification message here..."></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="target_class" class="form-label">Target Class (Optional)</label>
+                                <select class="form-select" id="target_class" name="target_class">
+                                    <option value="">All Classes</option>
+                                    {% for class_obj in classes %}
+                                    <option value="{{ class_obj.class_name }}">{{ class_obj.class_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="target_section" class="form-label">Target Section (Optional)</label>
+                                <input type="text" class="form-control" id="target_section" name="target_section" placeholder="e.g., A, B, C">
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> 
+                            <strong>Note:</strong> As a teacher, you can only send notifications to students. Leave class and section empty to send to all your students.
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-send"></i> Send Notification
+                            </button>
+                            <a href="{{ url_for('notifications.notifications_list') }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block dashboard_title %}Students{% endblock %}
+
+{% block sidebar_brand %}SMS Admin{% endblock %}
+
+{% block sidebar_nav %}
+{% include "layouts/sidebar_admin.html" %}
+{% endblock %}
+
+{% block nav_students_class %}active{% endblock %}
+
+{% block page_title %}Students{% endblock %}
+
+{% block user_avatar %}A{% endblock %}
+{% block user_name %}Admin{% endblock %}
+{% block user_role %}Administrator{% endblock %}
+
+{% block dashboard_content %}
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <form action="{{ url_for('students.student_list') }}" method="GET" class="d-flex gap-3">
+        <input type="text" name="search" class="form-control" placeholder="Search by name, admission number, or class..." value="{{ search }}">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Search
+        </button>
+        <a href="{{ url_for('students.student_add') }}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Add Student
+        </a>
+        {% if search %}
+        <a href="{{ url_for('students.student_list') }}" class="btn btn-secondary">
+            <i class="bi bi-x"></i> Clear
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Students Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">All Students</h3>
+        <span class="badge badge-primary">{{ students.total }} Students</span>
+    </div>
+    <div class="card-body">
+        {% if students.items %}
+        <div class="table-container">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th data-sort="admission_number">Admission No</th>
+                        <th data-sort="name">Name</th>
+                        <th data-sort="class">Class</th>
+                        <th data-sort="section">Section</th>
+                        <th data-sort="parent_name">Parent Name</th>
+                        <th data-sort="phone">Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students.items %}
+                    <tr>
+                        <td data-column="admission_number">{{ student.admission_number }}</td>
+                        <td data-column="name">{{ student.name }}</td>
+                        <td data-column="class">{{ student.class_name }}</td>
+                        <td data-column="section">{{ student.section or '-' }}</td>
+                        <td data-column="parent_name">{{ student.parent_name or '-' }}</td>
+                        <td data-column="phone">{{ student.phone or '-' }}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('students.student_profile', id=student.id) }}" class="btn btn-sm btn-secondary" title="View Profile">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ url_for('students.student_edit', id=student.id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ url_for('students.student_delete', id=student.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger action-btn" data-action="delete" data-id="{{ student.id }}" data-delete-url="{{ url_for('students.student_delete', id=student.id) }}" title="Delete" onclick="return confirm('Are you sure you want to delete this student?');">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if students.pages > 1 %}
+        <div class="pagination">
+            {% if students.has_prev %}
+            <a href="{{ url_for('students.student_list', page=students.prev_num, search=search) }}" class="pagination-item">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            {% else %}
+            <span class="pagination-item disabled">
+                <i class="bi bi-chevron-left"></i>
+            </span>
+            {% endif %}
+            
+            {% for page_num in students.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == students.page %}
+                    <span class="pagination-item active">{{ page_num }}</span>
+                    {% else %}
+                    <a href="{{ url_for('students.student_list', page=page_num, search=search) }}" class="pagination-item">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                <span class="pagination-item disabled">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if students.has_next %}
+            <a href="{{ url_for('students.student_list', page=students.next_num, search=search) }}" class="pagination-item">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+            {% else %}
+            <span class="pagination-item disabled">
+                <i class="bi bi-chevron-right"></i>
+            </span>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <i class="bi bi-people" style="font-size: 3rem; color: #CBD5E1;"></i>
+            <p style="color: #64748B; margin-top: 1rem;">No students found</p>
+            <a href="{{ url_for('students.student_add') }}" class="btn btn-primary mt-3">
+                <i class="bi bi-person-plus"></i> Add First Student
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initDashboard();
+        initDataTable();
+    });
+</script>
+{% endblock %}
